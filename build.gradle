@@ -1,0 +1,41 @@
+group 'gradle_testng_allure_rest_assured'
+version '1.0-SNAPSHOT'
+
+
+apply plugin: 'java'
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    agent
+}
+
+dependencies {
+    agent "org.aspectj:aspectjweaver:1.8.10"
+    testCompile "ru.yandex.qatools.allure:allure-testng-adaptor:1.5.4"
+    compile group: 'com.automation-remarks', name: 'video-recorder-core', version: '1.7'
+
+    testCompile 'org.seleniumhq.selenium:selenium-java:2.53.1'
+    testCompile 'org.seleniumhq.selenium:selenium-chrome-driver:2.53.1'
+    compile group: 'com.codeborne', name: 'selenide', version: '4.8'
+    compile group: 'org.testng', name: 'testng', version: '6.13.1'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.20'
+
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+    compile group: 'io.qameta.allure', name: 'allure-rest-assured', version: '2.0-BETA22'
+}
+
+defaultTasks 'clean', 'test'
+
+test.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
+
+test {
+    useTestNG() {
+        suites 'src/test/resources/suites/smoke.xml'
+    }
+}
