@@ -8,14 +8,6 @@
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 data/ping/~$endpoint.xlsx
-kernel-api-functional.iml
-kernel_automation.iml
-src/main/java/db/jpa/entity/UserResponsibilityAreas.java
-src/main/java/db/jpa/jpa_controllers/UserResponsibilityAreaController.java
-src/main/java/db/jpa/repos/UserResponsibilityAreasRepo.java
-src/test/java/web_ui/UserResponsibilityAreaTest.java
-
-
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
