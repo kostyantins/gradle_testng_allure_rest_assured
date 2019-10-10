@@ -2,33 +2,19 @@ group 'gradle_testng_allure_rest_assured'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'io.qameta.allure'
 
 defaultTasks 'clean', 'test'
-
-sourceCompatibility = 1.8
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath "io.qameta.allure:allure-gradle:2.5"
-    }
-}
 
 repositories {
     mavenCentral()
 }
 
-ext{
+ext {
     video_recorder = "1.7"
-    testng = "6.13.1"
-    lombok = "1.16.20"
-    selenide = "4.10"
-    rest_assured = "3.0.7"
-    allure_rest_assured = "2.0-BETA22"
+    testng = "7.0.0"
+    lombok = "1.18.10"
+    selenide = "5.3.1"
+    rest_assured = "4.1.1"
 }
 
 dependencies {
@@ -37,17 +23,30 @@ dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: lombok
     compile group: 'com.codeborne', name: 'selenide', version: selenide
     testCompile group: 'io.rest-assured', name: 'rest-assured', version: rest_assured
-    compile group: 'io.qameta.allure', name: 'allure-rest-assured', version: allure_rest_assured
-}
-
-allure {
-    version = '2.2.1'
-    autoconfigure = true
-    aspectjweaver = true
 }
 
 test {
     useTestNG() {
         suites 'src/test/resources/smoke.xml'
     }
+    ignoreFailures = true
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "io.qameta.allure:allure-gradle:2.8.1"
+    }
+}
+
+apply plugin: 'io.qameta.allure'
+
+allure {
+    version = '2.10.0'
+    autoconfigure = true
+    aspectjweaver = true
+    downloadLinkFormat = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline/%s/allure-commandline-%<s.zip'
 }

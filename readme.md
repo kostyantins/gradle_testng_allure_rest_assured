@@ -12,4 +12,4 @@ gradle someTestTask --tests *UiTest someOtherTestTask --tests *WebTest*ui
 
 
 allure generate -o build/reports/allure -- build/allure-results
-allure report open -o build/reportgs/allure/
+allure report open -o build/reports/allure/
