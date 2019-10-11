@@ -13,3 +13,7 @@ gradle someTestTask --tests *UiTest someOtherTestTask --tests *WebTest*ui
 
 allure generate -o build/reports/allure -- build/allure-results
 allure report open -o build/reports/allure/
+
+allure plugin: https://plugins.gradle.org/plugin/io.qameta.allure
+
+run tests with appropriate suite: gradle -DsuiteName=all

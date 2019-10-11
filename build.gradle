@@ -2,51 +2,122 @@ group 'gradle_testng_allure_rest_assured'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'io.qameta.allure'
 
-defaultTasks 'clean', 'test'
+sourceCompatibility = 12
+targetCompatibility = 12
+
+defaultTasks 'test'
+
+ext {
+    allureVersion = '2.10.0'
+    lombokVersion = '1.18.10'
+    videoRecorderVersion = '1.7'
+    testNGVersion = '7.0.0'
+    selenideVersion = '5.3.1'
+    restAssuredVersion = '4.1.1'
+    //reference to the java main class to be executed
+    javaMainClass = "util.ConfigurationProvider"
+}
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    video_recorder = "1.7"
-    testng = "7.0.0"
-    lombok = "1.18.10"
-    selenide = "5.3.1"
-    rest_assured = "4.1.1"
-}
-
 dependencies {
-    compile group: 'com.automation-remarks', name: 'video-recorder-core', version: video_recorder
-    compile group: 'org.testng', name: 'testng', version: testng
-    compile group: 'org.projectlombok', name: 'lombok', version: lombok
-    compile group: 'com.codeborne', name: 'selenide', version: selenide
-    testCompile group: 'io.rest-assured', name: 'rest-assured', version: rest_assured
-}
-
-test {
-    useTestNG() {
-        suites 'src/test/resources/smoke.xml'
-    }
-    ignoreFailures = true
+    compile group: 'com.automation-remarks', name: 'video-recorder-core', version: videoRecorderVersion
+    compile group: 'org.testng', name: 'testng', version: testNGVersion
+    compile group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    compile group: 'com.codeborne', name: 'selenide', version: selenideVersion
+    testCompile group: 'io.rest-assured', name: 'rest-assured', version: restAssuredVersion
 }
 
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
     }
 
     dependencies {
-        classpath "io.qameta.allure:allure-gradle:2.8.1"
+        classpath 'io.qameta.allure:allure-gradle:2.8.1'
     }
 }
 
-apply plugin: 'io.qameta.allure'
+//copy properties to allure directory
+task copyProperties(type: Copy) {
+    from 'src/test/resources/environment.properties'
+    into 'build/allure-results'
+}
+
+//init allure property with java class
+task initProperties(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class with Allure properties initialization"
+    classpath = sourceSets.main.runtimeClasspath
+    main = javaMainClass
+}
+
+test {
+    //initialization of allure (Links) annotation properties
+    systemProperty 'allure.link.tms.pattern', 'https://www.google.com/'
+    systemProperty 'allure.link.issue.pattern', 'https://www.wikipedia.org'
+    systemProperty 'allure.link.mylink.pattern', 'https://example.org/mylink/{}'
+
+    useTestNG() {
+        //using of changing test suits: gradle clean test -DsuiteName=all
+        suites String.format('src/test/resources/suites/%s.xml', System.getProperty('suiteName', 'smoke'))
+
+        beforeTest {
+            //some logic if need
+        }
+
+        afterTest {
+            //some logic if need
+        }
+    }
+    //avoiding build failed in case of test failed
+    ignoreFailures = true
+}
+
+//call init allure property with java class
+test.finalizedBy initProperties
+//call copy properties to allure directory
+test.finalizedBy copyProperties
 
 allure {
-    version = '2.10.0'
+    version = allureVersion
     autoconfigure = true
     aspectjweaver = true
     downloadLinkFormat = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline/%s/allure-commandline-%<s.zip'
 }
+
+//####### en example for running tests with task
+tasks.withType(Test) {
+    systemProperty 'allure.link.tms.pattern', 'https://www.google.com/'
+    systemProperty 'allure.link.issue.pattern', 'https://www.wikipedia.org'
+    systemProperty 'allure.link.mylink.pattern', 'https://example.org/mylink/{}'
+}
+
+//en example, usage: gradle allTests
+task myTests(type: Test) {
+    useTestNG() {
+        suites String.format('src/test/resources/suites/%s.xml', project.property('suite.name'))
+        ignoreFailures = true
+    }
+}
+
+myTests.finalizedBy initProperties
+myTests.finalizedBy copyProperties
+//#######
+
+//work with different env properties
+task getProperty {
+    if (project.property('env') == 'test') {
+        println project.property('my.name.test')
+        println project.property('your.name.test')
+    }else if (project.property('env') == 'prod') {
+        println project.property('my.name.prod')
+        println project.property('your.name.prod')
+    }
+}
+
