@@ -10,12 +10,21 @@ targetCompatibility = 12
 defaultTasks 'test'
 
 ext {
+    //dependence versions
     allureVersion = '2.10.0'
     lombokVersion = '1.18.10'
     videoRecorderVersion = '1.7'
     testNGVersion = '7.0.0'
     selenideVersion = '5.3.1'
     restAssuredVersion = '4.1.1'
+
+    //allure variables
+    allureCommandline = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline/%s/allure-commandline-%<s.zip'
+    tmsRefference = 'https://www.google.com/'
+    linkRefference = 'https://www.wikipedia.org'
+    myLinkRefference ='https://example.org/mylink/{}'
+
+
     //reference to the java main class to be executed
     javaMainClass = "util.ConfigurationProvider"
 }
@@ -59,9 +68,9 @@ task initProperties(type: JavaExec) {
 
 test {
     //initialization of allure (Links) annotation properties
-    systemProperty 'allure.link.tms.pattern', 'https://www.google.com/'
-    systemProperty 'allure.link.issue.pattern', 'https://www.wikipedia.org'
-    systemProperty 'allure.link.mylink.pattern', 'https://example.org/mylink/{}'
+    systemProperty 'allure.link.tms.pattern', tmsRefference
+    systemProperty 'allure.link.issue.pattern', linkRefference
+    systemProperty 'allure.link.mylink.pattern', myLinkRefference
 
     useTestNG() {
         //using of changing test suits: gradle clean test -DsuiteName=all work without gradle.properties
@@ -88,14 +97,14 @@ allure {
     version = allureVersion
     autoconfigure = true
     aspectjweaver = true
-    downloadLinkFormat = 'https://dl.bintray.com/qameta/maven/io/qameta/allure/allure-commandline/%s/allure-commandline-%<s.zip'
+    downloadLinkFormat = allureCommandline
 }
 
 //####### en example for running tests with task
 tasks.withType(Test) {
-    systemProperty 'allure.link.tms.pattern', 'https://www.google.com/'
-    systemProperty 'allure.link.issue.pattern', 'https://www.wikipedia.org'
-    systemProperty 'allure.link.mylink.pattern', 'https://example.org/mylink/{}'
+    systemProperty 'allure.link.tms.pattern', tmsRefference
+    systemProperty 'allure.link.issue.pattern', linkRefference
+    systemProperty 'allure.link.mylink.pattern', myLinkRefference
 }
 
 //en example, usage: gradle allTests
