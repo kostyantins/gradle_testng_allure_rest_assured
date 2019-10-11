@@ -64,7 +64,7 @@ test {
     systemProperty 'allure.link.mylink.pattern', 'https://example.org/mylink/{}'
 
     useTestNG() {
-        //using of changing test suits: gradle clean test -DsuiteName=all
+        //using of changing test suits: gradle clean test -DsuiteName=all work without gradle.properties
         suites String.format('src/test/resources/suites/%s.xml', System.getProperty('suiteName', 'smoke'))
 
         beforeTest {
